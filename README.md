@@ -10,7 +10,7 @@ I wanted to experiment with pgp and making my own protocol.
 
 ### Installation
 
-Install it using `pnpm i e2e-protocol`.
+Install it using `pnpm i e2e-protocol`. (Will be published to npm as soon as I feel like v1 is complete.)
 
 ### Basic Server
 
