@@ -31,6 +31,19 @@ const handleServerHandshake = async (data: Buffer) => {
   };
 };
 
+const sendClientHandshake = async () => {
+  const packet = Buffer.alloc(1 + 1 + 4 + 8);
+
+  packet.writeUint8(Packet.HANDSHAKE, 0);
+  packet.writeUint8(version, 1);
+
+  packet.writeUint32LE(utils.getDate32Now(), 2);
+
+  return {
+    packet
+  };
+};
+
 const handleExchange = async (data: Buffer, publicKey: string) => {
   const timestamp = data.readUint32LE(1);
   const receivedPublicKey = data.slice(5).toString();
@@ -89,6 +102,7 @@ const sendData = async (publicKey: string, message: string) => {
 
 export {
   handleServerHandshake,
+  sendClientHandshake,
   handleExchange,
   sendExchange,
   handleData,

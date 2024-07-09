@@ -1,10 +1,6 @@
 import EventEmitter from 'node:events';
 
-import {
-  createServer,
-  Server as NetServer,
-  Socket
-} from 'node:net';
+import * as net from 'node:net';
 
 import {
   handleData,
@@ -17,21 +13,13 @@ import {
   InvalidPacketError
 } from '../util/error';
 
+import {
+  Options,
+  Settings,
+  Event
+} from '../util/types';
+
 import Packet from '../util/Packet';
-
-export type Settings = {
-  keyPair: {
-    privateKey: string;
-    publicKey: string;
-  }
-}
-
-export type Options = {
-  host?: string;
-  port: number;
-}
-
-export type Event = 'connection' | 'message' | 'error' | 'close';
 
 export class Server {
   settings:    Settings;
@@ -39,9 +27,9 @@ export class Server {
 
   eventEmitter = new EventEmitter();
 
-  server: NetServer = createServer((socket) => {
-    let clientPublicKey;
-    let client;
+  server: net.Server = net.createServer((socket) => {
+    let clientPublicKey: string;
+    let client: ServerClient;
 
     socket.on('data', async (data) => {
       const packetID = data.readUint8(0);
@@ -112,6 +100,12 @@ export class Server {
     socket.on('error', (error) => {
       this.eventEmitter.emit('error', error);
     });
+
+    socket.on('close', () => {
+      this.connections = this.connections.filter((c) => c !== client);
+
+      this.eventEmitter.emit('close');
+    });
   });
 
   constructor(settings: Settings) {
@@ -134,10 +128,10 @@ export class Server {
 }
 
 export class ServerClient {
-  socket: Socket;
+  socket: net.Socket;
   publicKey: string;
 
-  constructor(socket: Socket, publicKey: string) {
+  constructor(socket: net.Socket, publicKey: string) {
     this.socket = socket;
     this.publicKey = publicKey;
   }
