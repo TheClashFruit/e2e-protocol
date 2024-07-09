@@ -128,9 +128,9 @@ The key exchange is also initiated by the client.
 
 The data is sent by the client or server.
 
-| Packet ID | Timestamp                                | Data         |
-|-----------|------------------------------------------|--------------|
-| 0x04      | 0x00 0x00 0x00 0x00                      | `Any String` |
+| Packet ID | Timestamp                                | Data                               |
+|-----------|------------------------------------------|------------------------------------|
+| 0x04      | 0x00 0x00 0x00 0x00                      | `-----BEGIN PGP MESSAGE----- ...`  |
 
 * Packet ID (1 byte): `0x04`
 * Timestamp (4 bytes): `UInt32`
