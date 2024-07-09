@@ -61,6 +61,12 @@ client.connect({
 });
 ```
 
+### Trusted Fingerprints
+
+You can add trusted fingerprints to the server and client with either `trustedFingerprints?: string[];` in the settings or `(client | server).shouldTrust((fingerprint: string) => Promise<boolean> | boolean);`.
+
+This is not required but is recommended to for more security.
+
 ## License
 
 ```

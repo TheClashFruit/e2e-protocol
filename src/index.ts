@@ -4,5 +4,6 @@ export {
 } from './api/server';
 
 export {
-  Client
+  Client,
+  ClientClient
 } from './api/client';

@@ -3,6 +3,7 @@ export interface Settings {
     privateKey: string;
     publicKey: string;
   }
+  trustedFingerprints?: string[];
 }
 
 export interface Options {

@@ -1,6 +1,7 @@
 import EventEmitter from 'node:events';
 
 import * as net from 'node:net';
+import * as pgp from 'openpgp';
 
 import {
   handleData,
@@ -26,6 +27,7 @@ export class Server {
   connections: ServerClient[] = [];
 
   eventEmitter = new EventEmitter();
+  shouldTrustCallback?: (fingerprint: string) => Promise<boolean> | boolean;
 
   server: net.Server = net.createServer((socket) => {
     let clientPublicKey: string;
@@ -59,6 +61,25 @@ export class Server {
 
             clientPublicKey = publicKey;
 
+            const fingerprint = (await pgp.readKey({ armoredKey: publicKey })).getFingerprint();
+
+            if (typeof this.settings.trustedFingerprints !== 'undefined') {
+              if (!this.settings.trustedFingerprints.includes(fingerprint)){
+
+                socket.write(Buffer.from([ Packet.EXCHANGE_ERROR, 0x00 ]));
+
+                return;
+              }
+            } else if (typeof this.shouldTrustCallback !== 'undefined') {
+              const shouldTrust = await this.shouldTrustCallback(fingerprint);
+
+              if (shouldTrust) {
+                socket.write(Buffer.from([ Packet.EXCHANGE_ERROR, 0x00 ]));
+
+                return;
+              }
+            }
+
             socket.write(packet);
 
             client = new ServerClient(socket, publicKey);
@@ -81,7 +102,7 @@ export class Server {
 
             this.eventEmitter.emit('message', {
               timestamp,
-              decryptedMessage
+              message: decryptedMessage
             });
           } catch (e) {
             this.eventEmitter.emit('error', e);
@@ -115,6 +136,10 @@ export class Server {
   on(event: Event, callback: (variable?: any) => any) {
     this.eventEmitter.on(event, callback);
   };
+
+  shouldTrust(callback: (fingerprint: string) => boolean) {
+    this.shouldTrustCallback = callback;
+  }
 
   listen(options: Options) {
     return this.server.listen(options.port, (options.host || '0.0.0.0'));

@@ -2,7 +2,7 @@
   "name": "e2e-protocol",
   "version": "1.0.0",
   "description": "A simple e2e encrypted tcp server and client library.",
-  "main": "build/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "start": "node .",
     "dev": "nodemon src/index.ts",
