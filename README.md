@@ -2,6 +2,10 @@
 
 A simple e2e encrypted tcp server and client library. 
 
+## Why?
+
+I wanted to experiment with pgp and making my own protocol.
+
 ## Setup
 
 ### Installation
@@ -66,6 +70,71 @@ client.connect({
 You can add trusted fingerprints to the server and client with either `trustedFingerprints?: string[];` in the settings or `(client | server).shouldTrust((fingerprint: string) => Promise<boolean> | boolean);`.
 
 This is not required but is recommended to for more security.
+
+## Specification
+
+### 1. Handshake
+
+The handshake is initiated by the client.
+
+#### 1.1. Client -> Server
+
+
+| Packet ID | Version | Timestamp           |
+|-----------|---------|---------------------|
+| 0x00      | 0x01    | 0x00 0x00 0x00 0x00 |
+
+
+* Packet ID (1 byte): `0x00`
+* Version (1 byte): `0x01`
+* Timestamp (4 bytes): `Int32`
+
+#### 1.2. Server -> Client
+
+| Packet ID | Version | Timestamp           | Latency                                 |
+|-----------|---------|---------------------|-----------------------------------------|
+| 0x00      | 0x01    | 0x00 0x00 0x00 0x00 | 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 |
+
+* Packet ID (1 byte): `0x00`
+* Version (1 byte): `0x01`
+* Timestamp (4 bytes): `Int32`
+* Latency (8 bytes): `Double`
+
+### 2. Key Exchange
+
+The key exchange is also initiated by the client.
+
+#### 2.1. Client -> Server
+
+| Packet ID | Timestamp                                | Public Key                                 |
+|-----------|------------------------------------------|--------------------------------------------|
+| 0x02      | 0x00 0x00 0x00 0x00                      | `-----BEGIN PGP PUBLIC KEY BLOCK----- ...` |
+
+* Packet ID (1 byte): `0x02`
+* Timestamp (4 bytes): `Int32`
+* Public Key (Variable): `String`
+
+#### 2.2. Server -> Client
+
+| Packet ID | Timestamp                                | Public Key                                 |
+|-----------|------------------------------------------|--------------------------------------------|
+| 0x02      | 0x00 0x00 0x00 0x00                      | `-----BEGIN PGP PUBLIC KEY BLOCK----- ...` |
+
+* Packet ID (1 byte): `0x02`
+* Timestamp (4 bytes): `Int32`
+* Public Key (Variable): `String`
+
+### 3. Data
+
+The data is sent by the client or server.
+
+| Packet ID | Timestamp                                | Data         |
+|-----------|------------------------------------------|--------------|
+| 0x04      | 0x00 0x00 0x00 0x00                      | `Any String` |
+
+* Packet ID (1 byte): `0x04`
+* Timestamp (4 bytes): `Int32`
+* Data (Variable): `String`
 
 ## License
 
