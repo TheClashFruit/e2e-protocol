@@ -4,11 +4,8 @@
     "target": "es2016",
     "module": "commonjs",
     "outDir": "./dist",
-
     "declaration": true,
     "declarationMap": true,
-    "emitDeclarationOnly": true,
-
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
