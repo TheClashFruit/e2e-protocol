@@ -1,8 +1,14 @@
 {
+  "include": ["src/**/*"],
   "compilerOptions": {
     "target": "es2016",
     "module": "commonjs",
-    "outDir": "./build",
+    "outDir": "./dist",
+
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
+
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
