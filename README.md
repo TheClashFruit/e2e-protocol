@@ -87,7 +87,7 @@ The handshake is initiated by the client.
 
 * Packet ID (1 byte): `0x00`
 * Version (1 byte): `0x01`
-* Timestamp (4 bytes): `Int32`
+* Timestamp (4 bytes): `UInt32`
 
 #### 1.2. Server -> Client
 
@@ -97,7 +97,7 @@ The handshake is initiated by the client.
 
 * Packet ID (1 byte): `0x00`
 * Version (1 byte): `0x01`
-* Timestamp (4 bytes): `Int32`
+* Timestamp (4 bytes): `UInt32`
 * Latency (8 bytes): `Double`
 
 ### 2. Key Exchange
@@ -111,7 +111,7 @@ The key exchange is also initiated by the client.
 | 0x02      | 0x00 0x00 0x00 0x00                      | `-----BEGIN PGP PUBLIC KEY BLOCK----- ...` |
 
 * Packet ID (1 byte): `0x02`
-* Timestamp (4 bytes): `Int32`
+* Timestamp (4 bytes): `UInt32`
 * Public Key (Variable): `String`
 
 #### 2.2. Server -> Client
@@ -121,7 +121,7 @@ The key exchange is also initiated by the client.
 | 0x02      | 0x00 0x00 0x00 0x00                      | `-----BEGIN PGP PUBLIC KEY BLOCK----- ...` |
 
 * Packet ID (1 byte): `0x02`
-* Timestamp (4 bytes): `Int32`
+* Timestamp (4 bytes): `UInt32`
 * Public Key (Variable): `String`
 
 ### 3. Data
@@ -133,7 +133,7 @@ The data is sent by the client or server.
 | 0x04      | 0x00 0x00 0x00 0x00                      | `Any String` |
 
 * Packet ID (1 byte): `0x04`
-* Timestamp (4 bytes): `Int32`
+* Timestamp (4 bytes): `UInt32`
 * Data (Variable): `String`
 
 ## License
