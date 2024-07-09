@@ -49,7 +49,7 @@ const client = new Client({
   }
 });
 
-server.on('message', (msg) => {
+client.on('message', (msg) => {
   if (msg === 'Hello, World!')
     client.sendData('Hello, World!');
 
