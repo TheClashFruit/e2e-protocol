@@ -103,8 +103,8 @@ const sendData = async (publicKey: string, message: string) => {
 const handleBinaryData = async (data: Buffer, privateKey: string, passphrase?: string) => {
   const timestamp = data.readUint32LE(1);
 
-  const encryptedMessage = data.slice(5).toString();
-  const decryptedMessage = await utils.decryptBinary(privateKey, encryptedMessage, passphrase);
+  const encryptedMessage = data.slice(5);
+  const decryptedMessage = await utils.decryptBinary(privateKey, new Uint8Array(encryptedMessage), passphrase);
 
   return {
     timestamp,
@@ -113,13 +113,13 @@ const handleBinaryData = async (data: Buffer, privateKey: string, passphrase?: s
 };
 
 const sendBinaryData = async (publicKey: string, message: Buffer) => {
-  const encrypted = await utils.encryptBinary(publicKey, message);
+  const encrypted = await utils.encryptBinary(publicKey, Uint8Array.from(message));
 
   const packet = Buffer.alloc(1 + 4 + encrypted.length);
 
   packet.writeUint8(Packet.BINARY_DATA, 0);
   packet.writeUint32LE(utils.getDate32Now(), 1);
-  packet.write(encrypted, 5, 'utf-8');
+  packet.set(encrypted, 5);
 
   return {
     packet,

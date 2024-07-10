@@ -42,24 +42,18 @@ const utils = {
 
     return chunks.join('');
   },
-  encryptBinary: async (publicKeyArmored: string, binary: Buffer) => {
+  encryptBinary: async (publicKeyArmored: string, binary: Uint8Array) => {
     const publicKey = await openpgp.readKey({ armoredKey: publicKeyArmored });
 
     const encrypted = await openpgp.encrypt({
       message: await openpgp.createMessage({ binary }),
-      encryptionKeys: publicKey
+      encryptionKeys: publicKey,
+      format: 'binary'
     });
 
-    const chunks = [];
-
-    // @ts-ignore
-    for await (const chunk of decrypted.data) {
-      chunks.push(chunk);
-    }
-
-    return chunks.join('');
+    return new Uint8Array(encrypted as ArrayBuffer);
   },
-  decryptBinary: async (privateKeyArmored: string, encryptedBinary: string, passphrase?: string) => {
+  decryptBinary: async (privateKeyArmored: string, encryptedBinary: Uint8Array, passphrase?: string) => {
     let privateKey = await openpgp.readPrivateKey({ armoredKey: privateKeyArmored });
 
     if (typeof passphrase !== 'undefined') {
@@ -75,17 +69,20 @@ const utils = {
 
     const decrypted = await openpgp.decrypt({
       message,
-      decryptionKeys: privateKey
+      decryptionKeys: privateKey,
+      format: 'binary'
     });
 
     const chunks = [];
 
     // @ts-ignore
     for await (const chunk of decrypted.data) {
+      console.log(chunk);
+
       chunks.push(chunk);
     }
 
-    return Buffer.concat(chunks);
+    return Buffer.from(chunks);
   }
 }
 

@@ -132,7 +132,7 @@ export class Server {
           break;
         }
         default: {
-          this.eventEmitter.emit('error', new InvalidPacketError());
+          this.eventEmitter.emit('error', new InvalidPacketError(data));
 
           break;
         }
