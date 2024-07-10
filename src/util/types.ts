@@ -2,6 +2,7 @@ export interface Settings {
   keyPair: {
     privateKey: string;
     publicKey: string;
+    passphrase?: string;
   }
   trustedFingerprints?: string[];
 }

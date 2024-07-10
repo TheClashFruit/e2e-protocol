@@ -94,7 +94,7 @@ export class Client {
             const {
               timestamp,
               decryptedMessage
-            } = await handleData(data, this.settings.keyPair.privateKey);
+            } = await handleData(data, this.settings.keyPair.privateKey, this.settings.keyPair.passphrase);
 
             this.eventEmitter.emit('message', {
               timestamp,

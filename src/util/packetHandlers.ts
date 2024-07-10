@@ -73,11 +73,11 @@ const sendExchange = async (publicKey: string) => {
   }
 };
 
-const handleData = async (data: Buffer, privateKey: string) => {
+const handleData = async (data: Buffer, privateKey: string, passphrase?: string) => {
   const timestamp = data.readUint32LE(1);
 
   const encryptedMessage = data.slice(5).toString();
-  const decryptedMessage = await utils.decryptMessage(privateKey, encryptedMessage);
+  const decryptedMessage = await utils.decryptMessage(privateKey, encryptedMessage, passphrase);
 
   return {
     timestamp,

@@ -14,8 +14,15 @@ const utils = {
 
     return encrypted.toString();
   },
-  decryptMessage: async (privateKeyArmored: string, encryptedMessage: string) => {
-    const privateKey = await openpgp.readPrivateKey({ armoredKey: privateKeyArmored });
+  decryptMessage: async (privateKeyArmored: string, encryptedMessage: string, passphrase?: string) => {
+    let privateKey = await openpgp.readPrivateKey({ armoredKey: privateKeyArmored });
+
+    if (typeof passphrase !== 'undefined') {
+      privateKey = await openpgp.decryptKey({
+        privateKey,
+        passphrase
+      });
+    }
 
     const message = await openpgp.readMessage({
       armoredMessage: encryptedMessage
