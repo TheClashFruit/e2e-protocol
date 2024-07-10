@@ -77,8 +77,6 @@ const utils = {
 
     // @ts-ignore
     for await (const chunk of decrypted.data) {
-      console.log(chunk);
-
       chunks.push(chunk);
     }
 
