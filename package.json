@@ -1,6 +1,6 @@
 {
   "name": "e2e-protocol",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple e2e encrypted tcp server and client library.",
   "main": "dist/index.js",
   "scripts": {
