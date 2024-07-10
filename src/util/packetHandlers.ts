@@ -100,11 +100,40 @@ const sendData = async (publicKey: string, message: string) => {
   };
 };
 
+const handleBinaryData = async (data: Buffer, privateKey: string, passphrase?: string) => {
+  const timestamp = data.readUint32LE(1);
+
+  const encryptedMessage = data.slice(5).toString();
+  const decryptedMessage = await utils.decryptBinary(privateKey, encryptedMessage, passphrase);
+
+  return {
+    timestamp,
+    decryptedMessage
+  };
+};
+
+const sendBinaryData = async (publicKey: string, message: Buffer) => {
+  const encrypted = await utils.encryptBinary(publicKey, message);
+
+  const packet = Buffer.alloc(1 + 4 + encrypted.length);
+
+  packet.writeUint8(Packet.BINARY_DATA, 0);
+  packet.writeUint32LE(utils.getDate32Now(), 1);
+  packet.write(encrypted, 5, 'utf-8');
+
+  return {
+    packet,
+    encrypted
+  };
+};
+
 export {
   handleServerHandshake,
   sendClientHandshake,
   handleExchange,
   sendExchange,
   handleData,
-  sendData
+  sendData,
+  handleBinaryData,
+  sendBinaryData
 }

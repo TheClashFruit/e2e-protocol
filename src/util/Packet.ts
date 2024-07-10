@@ -4,7 +4,9 @@ enum Packet {
   EXCHANGE,
   EXCHANGE_ERROR,
   DATA,
-  ERROR
+  ERROR,
+  BINARY_DATA,
+  BINARY_ERROR
 }
 
 export default Packet;

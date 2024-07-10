@@ -4,9 +4,11 @@ import * as net from 'node:net';
 import * as pgp from 'openpgp';
 
 import {
+  handleBinaryData,
   handleData,
   handleExchange,
   handleServerHandshake,
+  sendBinaryData,
   sendData
 } from '../util/packetHandlers';
 
@@ -102,6 +104,25 @@ export class Server {
 
             this.eventEmitter.emit('message', {
               timestamp,
+              type: 'text',
+              message: decryptedMessage
+            });
+          } catch (e) {
+            this.eventEmitter.emit('error', e);
+          }
+
+          break;
+        }
+        case Packet.BINARY_DATA: {
+          try {
+            const {
+              timestamp,
+              decryptedMessage
+            } = await handleBinaryData(data, this.settings.keyPair.privateKey, this.settings.keyPair.passphrase);
+
+            this.eventEmitter.emit('message', {
+              timestamp,
+              type: 'binary',
               message: decryptedMessage
             });
           } catch (e) {
@@ -163,6 +184,17 @@ export class ServerClient {
 
   async sendData(message: string) {
     const { packet, encrypted } = await sendData(
+      this.publicKey,
+      message
+    );
+
+    this.socket.write(packet);
+
+    return encrypted;
+  }
+
+  async sendBinaryData(message: Buffer) {
+    const { packet, encrypted } = await sendBinaryData(
       this.publicKey,
       message
     );

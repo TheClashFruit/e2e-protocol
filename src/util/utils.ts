@@ -41,6 +41,51 @@ const utils = {
     }
 
     return chunks.join('');
+  },
+  encryptBinary: async (publicKeyArmored: string, binary: Buffer) => {
+    const publicKey = await openpgp.readKey({ armoredKey: publicKeyArmored });
+
+    const encrypted = await openpgp.encrypt({
+      message: await openpgp.createMessage({ binary }),
+      encryptionKeys: publicKey
+    });
+
+    const chunks = [];
+
+    // @ts-ignore
+    for await (const chunk of decrypted.data) {
+      chunks.push(chunk);
+    }
+
+    return chunks.join('');
+  },
+  decryptBinary: async (privateKeyArmored: string, encryptedBinary: string, passphrase?: string) => {
+    let privateKey = await openpgp.readPrivateKey({ armoredKey: privateKeyArmored });
+
+    if (typeof passphrase !== 'undefined') {
+      privateKey = await openpgp.decryptKey({
+        privateKey,
+        passphrase
+      });
+    }
+
+    const message = await openpgp.readMessage({
+      binaryMessage: encryptedBinary
+    });
+
+    const decrypted = await openpgp.decrypt({
+      message,
+      decryptionKeys: privateKey
+    });
+
+    const chunks = [];
+
+    // @ts-ignore
+    for await (const chunk of decrypted.data) {
+      chunks.push(chunk);
+    }
+
+    return Buffer.concat(chunks);
   }
 }
 

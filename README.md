@@ -136,6 +136,18 @@ The data is sent by the client or server.
 * Timestamp (4 bytes): `UInt32`
 * Data (Variable): `String`
 
+### 4. Binary Data
+
+The binary data is sent by the client or server.
+
+| Packet ID | Timestamp                                | Data                               |
+|-----------|------------------------------------------|------------------------------------|
+| 0x06      | 0x00 0x00 0x00 0x00                      | `Buffer`                           |
+
+* Packet ID (1 byte): `0x06`
+* Timestamp (4 bytes): `UInt32`
+* Data (Variable): `Buffer`
+
 ## License
 
 ```

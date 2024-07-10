@@ -3,10 +3,12 @@ import EventEmitter from 'node:events';
 import * as net from 'node:net';
 
 import {
+  handleBinaryData,
   handleData,
   handleExchange,
-  sendData,
+  sendBinaryData,
   sendClientHandshake,
+  sendData,
   sendExchange
 } from '../util/packetHandlers';
 
@@ -98,8 +100,27 @@ export class Client {
 
             this.eventEmitter.emit('message', {
               timestamp,
+              type: 'text',
               message: decryptedMessage
             });
+
+            break;
+          }
+          case Packet.BINARY_DATA: {
+            try {
+              const {
+                timestamp,
+                decryptedMessage
+              } = await handleBinaryData(data, this.settings.keyPair.privateKey, this.settings.keyPair.passphrase);
+
+              this.eventEmitter.emit('message', {
+                timestamp,
+                type: 'binary',
+                message: decryptedMessage
+              });
+            } catch (e) {
+              this.eventEmitter.emit('error', e);
+            }
 
             break;
           }
@@ -139,6 +160,17 @@ export class ClientClient {
 
   async sendData(message: string) {
     const { packet, encrypted } = await sendData(
+      this.publicKey,
+      message
+    );
+
+    this.socket.write(packet);
+
+    return encrypted;
+  }
+
+  async sendBinaryData(message: Buffer) {
+    const { packet, encrypted } = await sendBinaryData(
       this.publicKey,
       message
     );
